@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" data-video-id="eGUor824a74">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Athletic Spirit — AI Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    /* -------------------------
+       RESET & THEME
+    -------------------------- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    :root{
+      --bg:#0a1a23;
+      --ink:#ffffff;
+      --muted:#c5e0ec;
+      --primary:#00ff9d;     /* neon green */
+      --accent:#00e5ff;      /* electric blue */
+      --card:rgba(8,26,35,.55);
+      --glass:blur(10px) saturate(120%);
+      --ring:0 0 0 1px rgba(0,255,157,.35), 0 15px 35px rgba(0,255,157,.15);
+      --ring-blue:0 0 0 1px rgba(0,229,255,.3), 0 15px 35px rgba(0,229,255,.12);
+      --radius:18px;
+      --speed:220ms;
+      --font-heading: 'Teko', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --text-shadow: 0 1px 4px rgba(0,0,0,.5);
+    }
+    body{
+      font-family: var(--font-body);
+      color:var(--ink);
+      line-height:1.5;
+      overflow-x:hidden;
+    }
+
+    /* -------------------------
+       NAVBAR
+    -------------------------- */
+    .nav{
+      position:fixed; inset-inline:0; top:0; z-index:20;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 24px; backdrop-filter: var(--glass);
+      background:linear-gradient(180deg, rgba(3,12,18,.75), rgba(3,12,18,.35) 70%, transparent);
+      border-bottom:1px solid rgba(0,229,255,.15);
+    }
+    .brand{
+      display:flex; align-items:center; gap:.6rem;
+      font-family: var(--font-heading); font-weight:700; font-size:1.2rem; letter-spacing:1px;
+    }
+    .brand .dot{width:10px; height:10px; border-radius:50%; background:var(--primary); box-shadow:0 0 12px var(--primary)}
+    .nav a{color:var(--ink); text-decoration:none; margin:0 .75rem; opacity:.9; font-weight:700;}
+    .nav a:hover{color:var(--primary)}
+    .cta{
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color:#06161d; border:none; border-radius:999px; padding:.65rem 1rem; cursor:pointer;
+      font-family: var(--font-heading);
+      font-weight:700; font-size:1rem; letter-spacing:.5px;
+      box-shadow: var(--ring); transition: transform var(--speed) ease;
+    }
+    .cta:hover{ transform: translateY(-1px) scale(1.02); }
+
+    /* -------------------------
+       HERO with YOUTUBE BG
+    -------------------------- */
+    .hero{
+      position:relative; height:100svh; display:grid; place-items:center; text-align:center; overflow:hidden;
+    }
+    .yt-wrap{
+      position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+    }
+    .yt-wrap iframe{
+      /* This ensures the video covers the area, maintaining its 16:9 aspect ratio */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 56.25vw; /* 16:9 Aspect Ratio (9 / 16 = 0.5625) */
+      min-height: 100vh;
+      min-width: 177.77vh; /* 16:9 Aspect Ratio (16 / 9 = 1.7777) */
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero::after{
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(1200px 600px at 80% 20%, rgba(0,229,255,.25), transparent 55%),
+                  radial-gradient(1000px 600px at 20% 80%, rgba(0,255,157,.25), transparent 55%),
+                  rgba(4,16,22,.55);
+      backdrop-filter: blur(2px);
+      z-index:1;
+    }
+    .hero-content{
+      position:relative; z-index:2; padding:1rem 2rem; max-width:900px;
+      animation: fadeUp .9s ease both;
+    }
+    .kicker{
+      color:var(--primary); text-transform:uppercase; letter-spacing:2px; font-size:.9rem;
+      font-family: var(--font-heading); font-weight:700;
+    }
+    .title{
+      font-family: var(--font-heading); font-weight:700; text-transform:uppercase;
+      font-size: clamp(2.8rem, 6vw, 4.5rem); line-height:1; margin:.6rem 0 1rem;
+      text-shadow: var(--text-shadow), 0 0 24px rgba(0,255,157,.25);
+    }
+    .sub{color:var(--muted); max-width:62ch; margin-inline:auto; text-shadow: var(--text-shadow);}
+    .hero-actions{margin-top:1.25rem; display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap}
+    .btn{
+      border:none; padding:.85rem 1.1rem; border-radius:12px; cursor:pointer;
+      font-family: var(--font-heading); font-weight:700; font-size:1rem; letter-spacing:.5px;
+      transition: transform var(--speed) ease, box-shadow var(--speed) ease;
+    }
+    .btn-primary{ background:linear-gradient(90deg,var(--primary), var(--accent)); color:#041216; box-shadow: var(--ring);}
+    .btn-ghost{ background:rgba(255,255,255,.08); color:var(--ink); border:1px solid rgba(255,255,255,.12); box-shadow: var(--ring-blue);}
+    .btn:hover{ transform: translateY(-2px); }
+
+    @keyframes fadeUp{from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:translateY(0)}}
+
+    /* -------------------------
+       FEATURE STRIP
+    -------------------------- */
+    .features{
+      position:relative; z-index:3; margin:-60px auto 0; padding:0 18px; max-width:1200px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+    }
+    .feature{
+      background:var(--card); border:1px solid rgba(0,229,255,.15); border-radius:var(--radius);
+      backdrop-filter: var(--glass); padding:18px; box-shadow: var(--ring-blue);
+      transition:transform var(--speed) ease, box-shadow var(--speed) ease;
+    }
+    .feature:hover{ transform:translateY(-4px); box-shadow: 0 0 0 1px rgba(0,255,157,.35), 0 30px 45px rgba(0,255,157,.12);}
+    .feature h3{
+      font-family: var(--font-heading); font-weight:700; font-size:1.5rem; letter-spacing:.5px;
+      margin:.4rem 0 .25rem;
+    }
+    .feature .sub { text-shadow: var(--text-shadow); }
+    .chip{
+      display:inline-block; padding:.25rem .5rem; border-radius:999px; background:rgba(0,255,157,.12); border:1px solid rgba(0,255,157,.35); color:var(--primary); font-size:.78rem; letter-spacing:.3px;
+      font-family: var(--font-heading); font-weight:700;
+    }
+
+    /* -------------------------
+       RECOMMENDATIONS
+    -------------------------- */
+    main {
+      position: relative;
+      background: transparent;
+    }
+    section{padding:72px 18px}
+    .section-wrap{max-width:1200px; margin:0 auto}
+    .section-title{
+      font-family: var(--font-heading); font-weight:700; text-transform:uppercase; letter-spacing:1px;
+      font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom:14px;
+      text-shadow: var(--text-shadow);
+    }
+    .section-sub{color:var(--muted); margin-bottom:18px; text-shadow: var(--text-shadow);}
+    .recs{
+      display:grid; grid-auto-flow:column; grid-auto-columns: minmax(260px, 1fr); gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px;
+    }
+    .card{
+      scroll-snap-align:start;
+      background:linear-gradient(180deg, rgba(0,229,255,.08), rgba(0,255,157,.08));
+      border:1px solid rgba(255,255,255,.14); border-radius:16px; padding:16px;
+      min-height:170px; display:flex; flex-direction:column; justify-content:space-between;
+      box-shadow: var(--ring-blue); transition: transform var(--speed) ease;
+    }
+    .card:hover{ transform: translateY(-4px) }
+    .tag{font-size:.8rem; opacity:.85; color:var(--primary); font-family:var(--font-heading); font-weight:700;}
+    .card h4{
+      font-family: var(--font-heading); font-weight:600; font-size:1.3rem; letter-spacing:.5px;
+      margin:.25rem 0 .35rem;
+    }
+    .meta{display:flex; gap:10px; font-size:.82rem; color:var(--muted)}
+    .card button{
+      align-self:flex-start; margin-top:.4rem; border:none; border-radius:10px; padding:.55rem .8rem;
+      background:rgba(255,255,255,.1); color:var(--ink); border:1px solid rgba(255,255,255,.18); cursor:pointer;
+    }
+    .card button:hover{ background:rgba(255,255,255,.18) }
+
+    /* -------------------------
+       GALLERY / TESTIMONIALS (quick)
+    -------------------------- */
+    .grid{
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+    }
+    .tile{
+      border-radius:14px; min-height:170px; background:
+       radial-gradient(600px 220px at 30% 15%, rgba(0,255,157,.25), transparent 60%),
+       radial-gradient(600px 220px at 80% 85%, rgba(0,229,255,.25), transparent 60%),
+       rgba(7,22,30,.6);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--ring-blue);
+    }
+
+    /* -------------------------
+       CHATBOT FLOATING
+    -------------------------- */
+    .chat{
+      /* From popup to embedded feature */
+      display: flex;
+      flex-direction: column;
+      height: 520px; /* Fixed height for scrollable body */
+      background: var(--card);
+      border: 1px solid rgba(0,229,255,.15);
+      border-radius: var(--radius);
+      box-shadow: var(--ring-blue);
+      overflow: hidden;
+    }
+
+    .chat .body{flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px}
+    .msg{max-width:80%; padding:10px 12px; border-radius:14px; font-size:.95rem}
+    .bot{ align-self:flex-start; background:rgba(0,229,255,.14); border:1px solid rgba(0,229,255,.35)}
+    .you{ align-self:flex-end; background:rgba(0,255,157,.14); border:1px solid rgba(0,255,157,.35)}
+
+    .quick{
+      display:flex; gap:8px; flex-wrap:wrap; padding:12px 12px 0;
+      border-top:1px solid rgba(255,255,255,.12);
+    }
+    .quick button{
+      border:none; padding:.4rem .6rem; border-radius:999px; font-size:.8rem;
+      background:rgba(255,255,255,.08); color:var(--ink); border:1px solid rgba(255,255,255,.15); cursor:pointer;
+    }
+    .quick button:hover{ background:rgba(255,255,255,.14) }
+    .chat .foot{display:flex; gap:8px; padding:10px 12px 12px;}
+    .chat input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:var(--ink); outline:none}
+    .chat button.send{
+      border:none; border-radius:10px; padding:.6rem .9rem; background:linear-gradient(90deg, var(--primary), var(--accent)); color:#031a21; font-weight:800;
+      cursor: pointer;
+      transition: opacity var(--speed) ease;
+    }
+    .chat button.send:hover:not(:disabled) { opacity: .9; }
+    .chat button.send:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Typing indicator for bot "thinking" state */
+    .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 8px 0; }
+    .typing-indicator span {
+      width: 8px; height: 8px; border-radius: 50%; background-color: rgba(0,229,255,.6);
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: -0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1.0); }
+    }
+
+    /* -------------------------
+       FOOTER
+    -------------------------- */
+    footer{
+      position: relative;
+      background: var(--bg);
+      padding:36px 18px; border-top:1px solid rgba(255,255,255,.08);
+      color:var(--muted); text-align:center
+    }
+
+    /* -------------------------
+       AI COACH SECTION
+    -------------------------- */
+    #ai-coach {
+      background: radial-gradient(1200px 500px at 50% 0%, rgba(0,255,157,.1), transparent 70%);
+    }
+
+    /* -------------------------
+       RESPONSIVE
+    -------------------------- */
+    @media (max-width: 900px){
+      .features{grid-template-columns:1fr; margin-top:-40px}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- YouTube background -->
+  <div class="yt-wrap">
+    <iframe id="ytbg" src=""
+      title="Sports background" frameborder="0"
+      allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="brand"><span class="dot"></span> Athletic Spirit</div>
+    <div>
+      <a href="#features">Features</a>
+      <a href="#clubs">Clubs</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="cta" onclick="document.querySelector('#ai-coach').scrollIntoView({behavior:'smooth'})">Chat with Coach</button>
+  </nav>
+
+  <!-- HERO with YouTube background -->
+  <header class="hero" id="home">
+    <div class="hero-content">
+      <div class="kicker">Train smarter</div>
+      <h1 class="title">Push Your Limits. Recover Better. Perform Consistently.</h1>
+      <p class="sub">A performance hub for athletes and coaches — live recommendations for events & run clubs, a simple planner, and a smart chatbot that knows your training goals.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="document.querySelector('#features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
+        <button class="btn btn-ghost" onclick="document.querySelector('#ai-coach').scrollIntoView({behavior:'smooth'})">Ask the Coach</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- FEATURE STRIP -->
+    <div class="features" id="features">
+      <div class="feature">
+        <span class="chip">Dashboard</span>
+        <h3>Readiness · Load · Recovery</h3>
+        <p class="sub">See weekly load, sleep, HR trends and smart flags. Lightweight tiles — fast and focused.</p>
+      </div>
+      <div class="feature">
+        <span class="chip">Clubs & Events</span>
+        <h3>Find Run Clubs · RSVP · Join</h3>
+        <p class="sub">Hyperlocal meetups, weekend long runs, races and scrimmages — surfaced just for you.</p>
+      </div>
+      <div class="feature">
+        <span class="chip">Planner</span>
+        <h3>Plan vs Done</h3>
+        <p class="sub">Drag sessions, mark complete, auto-tune next week. Constraints keep you injury-safe.</p>
+      </div>
+    </div>
+
+    <!-- AI COACH CHAT -->
+    <section id="ai-coach">
+      <div class="section-wrap">
+        <h2 class="section-title">Your AI Coach is Ready</h2>
+        <p class="section-sub">Ask anything — from finding a local run club to planning your next training block.</p>
+        <div class="chat" id="chat">
+          <div class="body" id="msgs">
+            <div class="msg bot">Hey! 👋 I'm your AI Coach. I can recommend run clubs, find events, log your workouts, and create training plans. How can I help you train smarter today?</div>
+          </div>
+          <div class="quick" id="quick">
+            <button onclick="sendPrompt('Recommend clubs')">Recommend clubs</button>
+            <button onclick="sendPrompt('Events this weekend')">Events this weekend</button>
+            <button onclick="sendPrompt('Log run 5k easy')">Log 5k easy</button>
+            <button onclick="sendPrompt('Plan intervals')">Plan intervals</button>
+          </div>
+          <div class="foot">
+            <input id="input" placeholder="Ask your AI coach..." />
+            <button class="send" onclick="send()">Send</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENDATIONS -->
+    <section id="clubs">
+      <div class="section-wrap">
+        <h2 class="section-title">🔥 Recommended Events & Run Clubs</h2>
+        <p class="section-sub">Based on your interests and preferred times.</p>
+        <div class="recs" id="recStrip"><!-- cards injected --></div>
+      </div>
+    </section>
+
+    <!-- GALLERY / TESTIMONIALS LOOK -->
+    <section id="gallery">
+      <div class="section-wrap">
+        <h2 class="section-title">Moments that Matter</h2>
+        <p class="section-sub">Snaps from the community — early miles, late grit.</p>
+        <div class="grid">
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="contact">
+    © <span id="y"></span> Athletic Spirit. Built with care. | contact@athleticspirit.example
+  </footer>
+
+  <script>
+    // Footer year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // --------------------------
+    // SIMPLE RECOMMENDER ENGINE
+    // --------------------------
+    const catalog = [
+      { id:1, type:'club', title:'Morning Run Crew', where:'Cubbon Park', when:'Sun 6:00 AM', tags:['running','endurance','social'], score:0 },
+      { id:2, type:'event', title:'City 10K', where:'MG Road', when:'Sat 7:00 AM', tags:['race','road','10k'], score:0 },
+      { id:3, type:'club', title:'Interval Tuesdays', where:'Kanteerava Track', when:'Tue 6:30 PM', tags:['speed','intervals'], score:0 },
+      { id:4, type:'event', title:'Trail Half Marathon', where:'Nandi Hills', when:'Next Sun 5:30 AM', tags:['trail','half','endurance'], score:0 },
+      { id:5, type:'club', title:'Weekend Football Crew', where:'Sports Arena', when:'Sat 6:00 PM', tags:['football','team'], score:0 },
+      { id:6, type:'event', title:'Cycling Century', where:'Airport Loop', when:'Sun 5:30 AM', tags:['cycling','endurance'], score:0 },
+    ];
+    const prefs = { interests:new Set(['running','endurance','speed']), time:'morning' };
+
+    function scoreItem(item){
+      let s = 0;
+      item.tags.forEach(t => { if (prefs.interests.has(t)) s += 3; });
+      if (prefs.time === 'morning' && /AM|Sun|Sat/.test(item.when)) s += 2;
+      if (prefs.time === 'evening' && /PM/.test(item.when)) s += 2;
+      // lightweight popularity bump for events
+      if (item.type === 'event') s += 1;
+      return s;
+    }
+
+    function renderRecs(){
+      const strip = document.getElementById('recStrip');
+      strip.innerHTML = '';
+      const ranked = catalog.map(it => ({...it, score:scoreItem(it)}))
+                            .sort((a,b)=>b.score-a.score);
+      ranked.forEach(it=>{
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <div>
+            <div class="tag">${it.type.toUpperCase()}</div>
+            <h4>${it.title}</h4>
+            <div class="meta"><span>${it.where}</span> • <span>${it.when}</span></div>
+          </div>
+          <button onclick="rsvp(${it.id})">RSVP</button>
+        `;
+        strip.appendChild(el);
+      });
+    }
+    renderRecs();
+
+    function rsvp(id){
+      const item = catalog.find(x=>x.id===id);
+      pushBot(`✅ Saved your RSVP for <b>${item.title}</b> at <i>${item.where}</i>. I’ll remind you the day before.`);
+    }
+
+    // --------------------------
+    // CHATBOT (Gemini API Integration)
+    // --------------------------
+    const chat = document.getElementById('chat');
+    const msgs = document.getElementById('msgs');
+    const input = document.getElementById('input');
+
+    // --- Gemini API Integration ---
+    const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // <-- IMPORTANT: Replace with your actual Gemini API key
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+    async function getGeminiResponse(prompt) {
+      // Add a check for the placeholder API key
+      if (GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+        return "Please replace 'YOUR_API_KEY_HERE' in the script with your actual Gemini API key to enable the AI coach.";
+      }
+
+      // Construct a detailed prompt for the model using a multi-agent approach
+      const fullPrompt = `You are a sophisticated AI coaching assistant powered by a multi-agent system.
+Your primary role is to act as a "Router Agent". First, you must analyze the user's request to determine the correct "Specialist Agent" to handle it. Then, you will adopt the persona of that specialist to provide the final answer.
+
+---
+**AGENT ROUTING LOGIC (Your Internal Monologue - Do not show to user):**
+1.  **Analyze User Request:** Read the user's request: "${prompt}".
+2.  **Determine Intent:** What is the user's primary goal? (e.g., find an event, log a workout, create a plan, update profile, general chat).
+3.  **Select Specialist Agent:** Based on the intent, choose one of the following specialist personas.
+4.  **Adopt Persona & Respond:** Generate the entire response from the chosen agent's point of view.
+
+---
+**AVAILABLE SPECIALIST AGENTS:**
+
+**1. RecommenderExpert:**
+   - **Persona:** An enthusiastic and knowledgeable local guide. You know all the best spots for athletes.
+   - **Task:** When the user asks for recommendations (clubs, events, etc.), analyze the provided 'catalog' and 'user_profile' context. Suggest 2-3 top items that are the best match. Mention title, location, and time. Use emojis like 🏃‍♀️ or 🎯.
+
+**2. PlannerExpert:**
+   - **Persona:** A meticulous and encouraging coach. You create clear, effective, and safe training plans.
+   - **Task:** When the user asks for a training plan (e.g., "plan intervals," "create a 5k plan"), provide a simple, actionable workout schedule. Use emojis like 📅 or 💪.
+
+**3. LoggerExpert:**
+   - **Persona:** An efficient and positive personal assistant.
+   - **Task:** When the user wants to log a workout (e.g., "log my 5k run"), confirm the action with a ✔️ emoji and add a short, motivational sentence.
+
+**4. ProfileManagerExpert:**
+   - **Persona:** A helpful and clear system administrator.
+   - **Task:** When the user wants to change their preferences (e.g., "I prefer evening runs now"), acknowledge the change, confirm that their profile is updated, and state the new preference. Do not show recommendations again, just confirm the update.
+
+**5. GeneralAssistant:**
+   - **Persona:** The friendly, main AI Coach persona.
+   - **Task:** If the request is general chit-chat, a greeting, or something that doesn't fit any other specialist, handle it with a helpful and conversational tone. If you cannot answer, politely state your primary capabilities (recommending, planning, logging).
+
+---
+**CONTEXT FOR AGENTS:**
+
+- **user_profile:**
+  - Interests: ${Array.from(prefs.interests).join(', ')}
+  - Preferred time for activities: ${prefs.time}
+
+- **catalog (available local events and clubs):**
+${JSON.stringify(catalog, null, 2)}
+
+---
+**YOUR FINAL TASK:**
+Now, begin your internal monologue (routing logic), select the correct agent, and generate a response to the user's request: "${prompt}"`;
+
+      try {
+        const response = await fetch(GEMINI_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: fullPrompt }] }],
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      } catch (error) {
+        console.error('Error calling Gemini API:', error);
+        return "Sorry, I'm having trouble connecting to my brain right now. Please try again in a moment.";
+      }
+    }
+
+    function pushYou(text){ const b=document.createElement('div'); b.className='msg you'; b.innerHTML=text; msgs.appendChild(b); msgs.scrollTop=msgs.scrollHeight; }
+    function pushBot(text){ const b=document.createElement('div'); b.className='msg bot'; b.innerHTML=text; msgs.appendChild(b); msgs.scrollTop=msgs.scrollHeight; }
+
+    function sendPrompt(text){ input.value = text; send(); }
+
+    async function send(){
+      const t = (input.value||'').trim();
+      const sendBtn = input.nextElementSibling;
+      if(!t || sendBtn.disabled) return;
+
+      pushYou(t);
+      input.value='';
+      input.disabled = true; // Disable input while waiting
+      sendBtn.disabled = true;
+      // Show a thinking indicator
+      const thinkingMsg = document.createElement('div');
+      thinkingMsg.className = 'msg bot';
+      thinkingMsg.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      msgs.appendChild(thinkingMsg);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      // Handle preference changes locally to update other UI elements
+      const q = t.toLowerCase();
+      if(q.includes('morning') || q.includes('evening')){ prefs.time = q.includes('evening') ? 'evening' : 'morning'; renderRecs(); }
+
+      const responseText = await getGeminiResponse(t);
+      thinkingMsg.innerHTML = responseText; // Update the thinking message with the actual response
+      msgs.scrollTop = msgs.scrollHeight;
+      input.disabled = false; // Re-enable input
+      sendBtn.disabled = false;
+      input.focus();
+    }
+    // Enter key
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ send(); } });
+
+    // --------------------------
+    // YOUTUBE BACKGROUND HELPERS
+    // Ensures the video covers and remains muted/looped. If a browser blocks autoplay, user interaction (scroll/click) will start it.
+    // --------------------------
+    const VIDEO_ID = (document.documentElement.getAttribute('data-video-id') || 'VIDEO_ID_HERE').trim();
+    (function ensureYTParams(){
+      const iframe = document.getElementById('ytbg');
+      if (VIDEO_ID && VIDEO_ID !== 'VIDEO_ID_HERE'){
+        iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&playsinline=1&loop=1&playlist=${VIDEO_ID}&modestbranding=1&enablejsapi=1`;
+      }
+    })();
+
+    // Attempt to play on first user interaction (for stricter mobile autoplay)
+    window.addEventListener('touchstart', kickYT, {once:true});
+    window.addEventListener('click', kickYT, {once:true});
+    function kickYT(){
+      const iframe = document.getElementById('ytbg');
+      iframe.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    }
+  </script>
+</body>
+</html>
