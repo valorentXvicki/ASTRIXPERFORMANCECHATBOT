@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-video-id="eGUor824a74">
+<html lang="en" data-video-id="Bcpu-jqAL6w">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,7 +35,6 @@
       line-height:1.5;
       overflow-x:hidden;
     }
-
     /* -------------------------
        NAVBAR
     -------------------------- */
@@ -182,15 +181,47 @@
        GALLERY / TESTIMONIALS (quick)
     -------------------------- */
     .grid{
-      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;
     }
     .tile{
-      border-radius:14px; min-height:170px; background:
-       radial-gradient(600px 220px at 30% 15%, rgba(0,255,157,.25), transparent 60%),
-       radial-gradient(600px 220px at 80% 85%, rgba(0,229,255,.25), transparent 60%),
-       rgba(7,22,30,.6);
+      position: relative;
+      border-radius:16px;
+      min-height:280px;
+      overflow: hidden;
       border:1px solid rgba(255,255,255,.12);
       box-shadow: var(--ring-blue);
+      transition: transform var(--speed) ease;
+    }
+    .tile:hover { transform: scale(1.03); }
+    .tile img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      transition: transform calc(var(--speed) * 2) ease;
+    }
+    .tile:hover img { transform: scale(1.1); }
+    .tile-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(to top, rgba(4,16,22,.9) 10%, rgba(4,16,22,.5) 50%, transparent 80%);
+    }
+    .tile-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      padding: 16px;
+      color: var(--ink);
+    }
+    .tile-content h4 { font-family: var(--font-heading); font-weight: 700; font-size: 1.3rem; margin: 0 0 4px; text-shadow: var(--text-shadow); }
+    .tile-content p {
+      font-size: .9rem; color: var(--muted); margin: 0;
+      font-style: italic;
     }
 
     /* -------------------------
@@ -332,7 +363,7 @@
         <p class="section-sub">Ask anything — from finding a local run club to planning your next training block.</p>
         <div class="chat" id="chat">
           <div class="body" id="msgs">
-            <div class="msg bot">Hey! 👋 I'm your AI Coach. I can recommend run clubs, find events, log your workouts, and create training plans. How can I help you train smarter today?</div>
+            <div class="msg bot">Hey! 👋 I'm your AI Coach. How can I assist you</div>
           </div>
           <div class="quick" id="quick">
             <button onclick="sendPrompt('Recommend clubs')">Recommend clubs</button>
@@ -363,8 +394,33 @@
         <h2 class="section-title">Moments that Matter</h2>
         <p class="section-sub">Snaps from the community — early miles, late grit.</p>
         <div class="grid">
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+          <!-- Tile 1: Community Photo -->
+          <div class="tile">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop" alt="Athlete running at sunrise">
+            <div class="tile-overlay"></div>
+            <div class="tile-content">
+              <h4>Sunrise Run with the Crew</h4>
+              <p>"Nothing beats the energy of a morning run club."</p>
+            </div>
+          </div>
+          <!-- Tile 2: Feature Screenshot (Planner) -->
+          <div class="tile">
+            <img src="C:\Users\vigne\OneDrive\Desktop\Young Man City Reaching His Goals Stock Photo 1784812541 _ Shutterstock_files\7.jpg" alt="Screenshot of a training plan on a phone">
+            <div class="tile-overlay"></div>
+            <div class="tile-content">
+              <h4>Plan vs. Done</h4>
+              <p>"The AI Planner kept me on track for my first 10k."</p>
+            </div>
+          </div>
+          <!-- Tile 3: Testimonial -->
+          <div class="tile">
+            <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069&auto=format&fit=crop" alt="Athlete celebrating after a workout">
+            <div class="tile-overlay"></div>
+            <div class="tile-content">
+              <h4>New Personal Best!</h4>
+              <p>"The AI Coach's interval suggestions were a game-changer."</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -372,8 +428,12 @@
 
   <!-- FOOTER -->
   <footer id="contact">
-    © <span id="y"></span> Athletic Spirit. Built with care. | contact@athleticspirit.example
+    © <span id="y"></span> Athletic Spirit. Built with care. | athleticspirit@gmail.com
+
   </footer>
+
+  <!-- YouTube IFrame Player API Script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
     // Footer year
@@ -382,7 +442,8 @@
     // --------------------------
     // SIMPLE RECOMMENDER ENGINE
     // --------------------------
-    const catalog = [
+    // Initial static catalog (can be replaced or augmented by dynamic data)
+    let catalog = [
       { id:1, type:'club', title:'Morning Run Crew', where:'Cubbon Park', when:'Sun 6:00 AM', tags:['running','endurance','social'], score:0 },
       { id:2, type:'event', title:'City 10K', where:'MG Road', when:'Sat 7:00 AM', tags:['race','road','10k'], score:0 },
       { id:3, type:'club', title:'Interval Tuesdays', where:'Kanteerava Track', when:'Tue 6:30 PM', tags:['speed','intervals'], score:0 },
@@ -390,23 +451,131 @@
       { id:5, type:'club', title:'Weekend Football Crew', where:'Sports Arena', when:'Sat 6:00 PM', tags:['football','team'], score:0 },
       { id:6, type:'event', title:'Cycling Century', where:'Airport Loop', when:'Sun 5:30 AM', tags:['cycling','endurance'], score:0 },
     ];
-    const prefs = { interests:new Set(['running','endurance','speed']), time:'morning' };
+    
+    // User preferences will be loaded from the backend.
+    // Initialize with defaults, then fetch.
+    let prefs = { interests: new Set(['running']), time: 'morning' };
+    let userRsvps = new Set(); // To store user's RSVPs
+
+    // --- NEW: Function to fetch user data from backend ---
+    async function loadUserData() {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        // If no token, redirect to login.
+        window.location.href = 'login.html'; // Redirect to login if not authenticated
+        console.log("No auth token found. Using default preferences.");
+        return;
+      }
+
+      try {
+        const prefsResponse = await fetch('http://localhost:3000/api/preferences', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!prefsResponse.ok) {
+          console.error("Failed to load preferences:", prefsResponse.statusText);
+          return;
+        }
+        const userPrefs = await prefsResponse.json();
+        prefs.interests = new Set(userPrefs.interests && userPrefs.interests.length ? userPrefs.interests : ['running']);
+        prefs.time = userPrefs.time || 'morning';
+        if (userPrefs.rsvps && Array.isArray(userPrefs.rsvps)) {
+          userRsvps = new Set(userPrefs.rsvps);
+        }
+      } catch (err) {
+        console.error("Error loading user data:", err);
+      }
+    }
+    loadUserData().then(() => {
+      // After loading user data, fetch events from Playo-like source and render recommendations
+      fetchEventsFromPlayo();
+      renderRecommendations();
+    });
 
     function scoreItem(item){
       let s = 0;
       item.tags.forEach(t => { if (prefs.interests.has(t)) s += 3; });
       if (prefs.time === 'morning' && /AM|Sun|Sat/.test(item.when)) s += 2;
       if (prefs.time === 'evening' && /PM/.test(item.when)) s += 2;
-      // lightweight popularity bump for events
+      // Lightweight popularity bump for events
       if (item.type === 'event') s += 1;
       return s;
     }
 
-    function renderRecs(){
+    // Simulate fetching events from a "Playo-like" source
+    // In a real application, this would involve an API call to a backend
+    // that integrates with Playo or a similar event platform to get live data.
+    function fetchEventsFromPlayo() {
+      const newEventsFromPlayo = [
+        { id:7, type:'event', title:'Badminton Tournament', where:'City Sports Complex', when:'Sat 2:00 PM', tags:['badminton','tournament','indoor'], score:0 },
+        { id:8, type:'club', title:'Evening Cycling Group', where:'Lalbagh Road', when:'Wed 6:00 PM', tags:['cycling','social','road'], score:0 },
+        { id:9, type:'event', title:'Yoga & Meditation Retreat', where:'Botanical Garden', when:'Next Sat 8:00 AM', tags:['yoga','wellness','outdoor'], score:0 },
+        { id:10, type:'club', title:'Basketball Pickup Game', where:'Local Court', when:'Fri 7:00 PM', tags:['basketball','team','casual'], score:0 },
+        { id:101, type:'event', title:'Community Fun Run', where:'Local Park', when:'Sun 9:00 AM', tags:['running','social','5k'], score:0 },
+        { id:102, type:'club', title:'Morning Swimmers Club', where:'Aquatic Center', when:'Mon-Fri 6:00 AM', tags:['swimming','endurance'], score:0 },
+        { id:103, type:'event', title:'Mountain Biking Challenge', where:'Hills Trails', when:'Next Sat 7:00 AM', tags:['cycling','mountain','endurance'], score:0 },
+        { id:11, type:'event', title:'Table Tennis Open', where:'Community Hall', when:'Sun 10:00 AM', tags:['table tennis','tournament'], score:0 },
+        { id:12, type:'club', title:'Early Bird Swimmers', where:'Olympic Pool', when:'Mon-Fri 5:30 AM', tags:['swimming','endurance'], score:0 },
+      ];
+      // Merge new events, avoiding duplicates by ID (simple merge for demo)
+      const existingIds = new Set(catalog.map(e => e.id));
+      newEventsFromPlayo.forEach(newEvent => {
+        if (!existingIds.has(newEvent.id)) {
+          catalog.push(newEvent);
+        }
+      });
+      console.log("Events updated from Playo-like source:", catalog);
+    }
+
+    /**
+     * Uses the Gemini API to rank the entire catalog based on user preferences.
+     * @returns {Promise<Array>} A promise that resolves to the AI-ranked catalog.
+     */
+    async function getAiRankedCatalog() {
+      // Prepare a specific prompt for the ranking task
+      const rankingPrompt = `
+        You are an expert recommendation engine. Your task is to rank a list of sporting events and clubs based on a user's profile.
+        Analyze the user's profile and the catalog of items.
+        Return a JSON array containing only the integer 'id' of each item, sorted from most to least relevant for the user.
+
+        **User Profile:**
+        - Interests: ${Array.from(prefs.interests).join(', ')}
+        - Preferred Time: ${prefs.time}
+
+        **Catalog of Items (JSON):**
+        ${JSON.stringify(catalog.map(({id, type, title, tags, when}) => ({id, type, title, tags, when})))}
+
+        **Your Response MUST be a valid JSON array of numbers, like this: [4, 1, 2, 6, 3, 5, ...]. Do not include any other text or markdown.**
+      `;
+
+      try {
+        const response = await fetch(GEMINI_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: rankingPrompt }] }] }),
+        });
+        if (!response.ok) throw new Error('AI ranking request failed');
+
+        const data = await response.json();
+        const textResponse = data.candidates[0].content.parts[0].text;
+        const sortedIds = JSON.parse(textResponse.replace(/```json|```/g, '').trim());
+
+        // Create a map for quick lookups and return the sorted catalog
+        const catalogMap = new Map(catalog.map(item => [item.id, item]));
+        return sortedIds.map(id => catalogMap.get(id)).filter(Boolean); // filter(Boolean) removes any undefined items
+      } catch (error) {
+        console.error("AI Ranking Error:", error, "Falling back to basic scoring.");
+        // Fallback to the old scoring method if the API fails
+        return catalog.map(it => ({...it, score:scoreItem(it)})).sort((a,b)=>b.score-a.score);
+      }
+    }
+
+    async function renderRecs(){
       const strip = document.getElementById('recStrip');
       strip.innerHTML = '';
-      const ranked = catalog.map(it => ({...it, score:scoreItem(it)}))
-                            .sort((a,b)=>b.score-a.score);
+      
+      // Get the AI-ranked list (or fallback to old method if it fails)
+      const ranked = await getAiRankedCatalog();
+
       ranked.forEach(it=>{
         const el = document.createElement('div');
         el.className = 'card';
@@ -419,14 +588,38 @@
           <button onclick="rsvp(${it.id})">RSVP</button>
         `;
         strip.appendChild(el);
+        // Optionally, disable RSVP button if already RSVP'd
+        if (userRsvps.has(it.id)) {
+            el.querySelector('button').disabled = true;
+            el.querySelector('button').textContent = 'RSVP\'d';
+        }
       });
     }
-    renderRecs();
+    
+    // --- UPDATED: Initial Load Sequence ---
+    async function initializeApp() {
+      await loadUserData(); // Load user prefs first
+      fetchEventsFromPlayo(); // Then get event data
+      renderRecs(); // Then render based on combined data
+    }
+    initializeApp();
 
-    function rsvp(id){
+    async function rsvp(id){
       const item = catalog.find(x=>x.id===id);
+      const token = localStorage.getItem('authToken');
+      // Persist RSVP to backend
+      await fetch('http://localhost:3000/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ eventId: id })
+      });
+      userRsvps.add(id); // Add to local set
+      // Confirm to user
       pushBot(`✅ Saved your RSVP for <b>${item.title}</b> at <i>${item.where}</i>. I’ll remind you the day before.`);
     }
+
+    // Simulate real-time updates by fetching and rendering events periodically
+    setInterval(() => { fetchEventsFromPlayo(); renderRecs(); }, 15000); // Update every 15 seconds
 
     // --------------------------
     // CHATBOT (Gemini API Integration)
@@ -436,12 +629,12 @@
     const input = document.getElementById('input');
 
     // --- Gemini API Integration ---
-    const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // <-- IMPORTANT: Replace with your actual Gemini API key
+    const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // <-- PASTE YOUR ACTUAL GEMINI API KEY HERE
     const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
     async function getGeminiResponse(prompt) {
       // Add a check for the placeholder API key
-      if (GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+      if (GEMINI_API_KEY === 'YOUR_API_KEY_HERE' || !GEMINI_API_KEY) {
         return "Please replace 'YOUR_API_KEY_HERE' in the script with your actual Gemini API key to enable the AI coach.";
       }
 
@@ -473,9 +666,11 @@ Your primary role is to act as a "Router Agent". First, you must analyze the use
 
 **4. ProfileManagerExpert:**
    - **Persona:** A helpful and clear system administrator.
-   - **Task:** When the user wants to change their preferences (e.g., "I prefer evening runs now"), acknowledge the change, confirm that their profile is updated, and state the new preference. Do not show recommendations again, just confirm the update.
+   - **Persona:** A helpful and clear system administrator who manages user settings.
+   - **Task:** When the user wants to change their preferences (e.g., "I prefer evening runs now", "I'm interested in swimming"), acknowledge the change, confirm that their profile is updated, and state the new preference. Crucially, if a preference is changed that affects recommendations (like 'time' or 'interests'), explicitly state that the recommendations have been updated.
+   - **Important:** If the user asks to change time preference, respond with "Your preferred time has been updated to: [morning/evening]." If the user asks to change interests, respond with "Your interests have been updated. New interests: [comma-separated list of all current interests]." For example, if they say "I'm interested in swimming", respond with "Your interests have been updated. New interests: running, endurance, speed, swimming."
 
-**5. GeneralAssistant:**
+**5. GeneralAssistant (Default):**
    - **Persona:** The friendly, main AI Coach persona.
    - **Task:** If the request is general chit-chat, a greeting, or something that doesn't fit any other specialist, handle it with a helpful and conversational tone. If you cannot answer, politely state your primary capabilities (recommending, planning, logging).
 
@@ -537,13 +732,41 @@ Now, begin your internal monologue (routing logic), select the correct agent, an
       msgs.appendChild(thinkingMsg);
       msgs.scrollTop = msgs.scrollHeight;
 
-      // Handle preference changes locally to update other UI elements
-      const q = t.toLowerCase();
-      if(q.includes('morning') || q.includes('evening')){ prefs.time = q.includes('evening') ? 'evening' : 'morning'; renderRecs(); }
+      // Flag to track if preferences were changed by the AI's response
+      let preferencesChanged = false;
 
       const responseText = await getGeminiResponse(t);
       thinkingMsg.innerHTML = responseText; // Update the thinking message with the actual response
       msgs.scrollTop = msgs.scrollHeight;
+
+      // --- NEW: Parse AI response for preference changes and persist them ---
+      const lowerCaseAiResponse = responseText.toLowerCase();
+
+      if (lowerCaseAiResponse.includes('your preferred time has been updated to:')) {
+          const timeMatch = lowerCaseAiResponse.match(/updated to:\s*(morning|evening)/);
+          if (timeMatch && timeMatch[1]) { prefs.time = timeMatch[1]; preferencesChanged = true; }
+      }
+
+      if (lowerCaseAiResponse.includes('new interests:')) {
+          const interestsMatch = lowerCaseAiResponse.match(/new interests:\s*(.*)/);
+          if (interestsMatch && interestsMatch[1]) {
+              const newInterestsArray = interestsMatch[1].split(',').map(s => s.trim()).filter(Boolean);
+              prefs.interests = new Set(newInterestsArray);
+              preferencesChanged = true;
+          }
+      }
+
+      if (preferencesChanged) {
+        renderRecs(); // Re-render recommendations immediately
+        // Persist the changes to the backend
+        const token = localStorage.getItem('authToken');
+        await fetch('http://localhost:3000/api/preferences', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ interests: Array.from(prefs.interests), time: prefs.time })
+        });
+        console.log("Preferences saved to backend.");
+      }
       input.disabled = false; // Re-enable input
       sendBtn.disabled = false;
       input.focus();
@@ -554,21 +777,36 @@ Now, begin your internal monologue (routing logic), select the correct agent, an
     // --------------------------
     // YOUTUBE BACKGROUND HELPERS
     // Ensures the video covers and remains muted/looped. If a browser blocks autoplay, user interaction (scroll/click) will start it.
+    // This uses the official YouTube IFrame Player API for better reliability.
     // --------------------------
     const VIDEO_ID = (document.documentElement.getAttribute('data-video-id') || 'VIDEO_ID_HERE').trim();
-    (function ensureYTParams(){
-      const iframe = document.getElementById('ytbg');
-      if (VIDEO_ID && VIDEO_ID !== 'VIDEO_ID_HERE'){
-        iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&playsinline=1&loop=1&playlist=${VIDEO_ID}&modestbranding=1&enablejsapi=1`;
-      }
-    })();
+    let player;
 
-    // Attempt to play on first user interaction (for stricter mobile autoplay)
-    window.addEventListener('touchstart', kickYT, {once:true});
-    window.addEventListener('click', kickYT, {once:true});
-    function kickYT(){
-      const iframe = document.getElementById('ytbg');
-      iframe.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    // This function is called by the YouTube API script once it's ready.
+    function onYouTubeIframeAPIReady() {
+      if (VIDEO_ID && VIDEO_ID !== 'VIDEO_ID_HERE') {
+        player = new YT.Player('ytbg', {
+          videoId: VIDEO_ID,
+          playerVars: {
+            'autoplay': 1,
+            'controls': 0,
+            'showinfo': 0,
+            'modestbranding': 1,
+            'loop': 1,
+            'playsinline': 1,
+            'rel': 0,
+            'playlist': VIDEO_ID // Required for loop to work
+          },
+          events: {
+            'onReady': onPlayerReady
+          }
+        });
+      }
+    }
+
+    function onPlayerReady(event) {
+      event.target.mute();
+      event.target.playVideo();
     }
   </script>
 </body>
